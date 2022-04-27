@@ -1,6 +1,6 @@
 import requests
 import gtfs_realtime_pb2 as gtfs
-import datetime as dt
+from datetime import datetime as dt
 
 # 1, 2, 3, 4, 5, 6, 7 trains
 url = 'https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs'
@@ -47,12 +47,12 @@ def main():
                     for update in trip_update.stop_time_update:
                         if update.HasField('stop_id') and update.stop_id == "117N":
                             if update.HasField('arrival') and update.arrival.HasField('time'):
-                                time = dt.datetime.fromtimestamp(update.arrival.time)
-                                print("Found Northbound 1 train arriving at", time)
+                                time = dt.fromtimestamp(update.arrival.time)
+                                print("Found Northbound 1 train arriving in", time - dt.now())
                         elif update.HasField('stop_id') and update.stop_id == "117S":
                             if update.HasField('arrival') and update.arrival.HasField('time'):
-                                time = dt.datetime.fromtimestamp(update.arrival.time)
-                                print("Found Southbound 1 train arriving at", time)
+                                time = dt.fromtimestamp(update.arrival.time)
+                                print("Found Southbound 1 train arriving in", time - dt.now())
 
 if __name__ == '__main__':
     main()
