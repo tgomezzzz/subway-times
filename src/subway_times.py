@@ -1,6 +1,11 @@
 from graphics import *
 from selector import *
 from train import *
+from serial_reader import *
+
+PORT = '/dev/cu.wchusbserial533C0037561'
+BAUD = 115200
+DATA = 'ascii'
 
 UP = -1
 DOWN = 1
@@ -30,6 +35,8 @@ def setDisplayTimes(station):
         downtown_times[i].setText(down_text)
 
 def showTimes():
+    ser = SerialReader(PORT, BAUD, DATA)
+
     win = GraphWin('Subway Times', 1200, 700, autoflush=False)
     win.setBackground("black")
 
@@ -95,23 +102,26 @@ def showTimes():
 
     while True:
         key = win.checkKey()
-        if key == "Up":
+        line = ser.readLine()
+        if key == "Up" or line == "Up":
             if selected == TRAINS:
                 names, data = selectors[selected].selectNext(UP)
                 station = selectors[STATIONS].setOptions(names)
-                setDisplayTimes(data[station])
+                if station in data:
+                    setDisplayTimes(data[station])
             else:
                 station = selectors[selected].selectNext(UP)
                 setDisplayTimes(data[station])
-        elif key == "Down":
+        elif key == "Down" or line == "Down":
             if selected == TRAINS:
                 names, data = selectors[selected].selectNext(DOWN)
                 station = selectors[STATIONS].setOptions(names)
-                setDisplayTimes(data[station])
+                if station in data:
+                    setDisplayTimes(data[station])
             else:
                 station = selectors[selected].selectNext(DOWN)
                 setDisplayTimes(data[station])
-        elif key == "Right" or key == "Left":
+        elif key == "Right" or key == "Left" or line == "Left" or line == "Right":
             selectors[selected].unchoose()
             selected = 1 - selected
             selectors[selected].choose()
